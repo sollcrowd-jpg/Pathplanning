@@ -7,6 +7,10 @@
 
 #include <path_planning/graph_search/graph_search.h>
 
+#include <queue>
+#include <algorithm>
+#include <cmath>
+
 /**
  * General graph search instructions:
  *
@@ -45,18 +49,69 @@ std::vector<Cell> depthFirstSearch(GridGraph& graph, const Cell& start, const Ce
     return path;
 }
 
-std::vector<Cell> breadthFirstSearch(GridGraph& graph, const Cell& start, const Cell& goal)
+std::vector<Cell> breadthFirstSearch(GridGraph& graph,
+                                     const Cell& start,
+                                     const Cell& goal)
 {
-    std::vector<Cell> path;  // The final path should be placed here.
+    std::vector<Cell> path;
 
-    initGraph(graph);  // Make sure all the node values are reset.
+    // Reset node data
+    initGraph(graph);
 
     int start_idx = cellToIdx(start.i, start.j, graph);
+    int goal_idx  = cellToIdx(goal.i,  goal.j,  graph);
 
-    /**
-     * TODO (P3): Implement BFS.
-     */
+    std::queue<int> q;
 
+    // Initialize start node
+    graph.visited[start_idx]  = true;
+    graph.distance[start_idx] = 0;
+    graph.parent[start_idx]   = -1;
+
+    q.push(start_idx);
+
+    // For visualization: record the start
+    graph.visited_cells.push_back(start);
+
+    while(!q.empty())
+    {
+        int current = q.front();
+        q.pop();
+
+        // Check for goal
+        if(current == goal_idx)
+            break;
+
+        // Visualization: mark which cell we’re expanding
+        Cell c = idxToCell(current, graph);
+        graph.visited_cells.push_back(c);
+
+        // Expand neighbors
+        std::vector<int> neighbors = findNeighbors(current, graph);
+        for(int n_idx : neighbors)
+        {
+            // Already visited?
+            if(graph.visited[n_idx])
+                continue;
+
+            // In collision?
+            if(checkCollision(n_idx, graph))
+                continue;
+
+            graph.visited[n_idx]  = true;
+            graph.parent[n_idx]   = current;
+            graph.distance[n_idx] = graph.distance[current] + 1;
+
+            q.push(n_idx);
+        }
+    }
+
+    // If goal never reached, return empty path
+    if(!graph.visited[goal_idx])
+        return path;
+
+    // Reconstruct path using helper
+    path = tracePath(goal_idx, graph);
     return path;
 }
 

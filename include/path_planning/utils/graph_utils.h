@@ -2,7 +2,7 @@
 #define PATH_PLANNING_GRAPH_SEARCH_GRAPH_UTILS_H
 
 #include <vector>
-#include <string>
+#include <limits>
 
 #define HIGH 1e6
 #define ROBOT_RADIUS 0.137
@@ -48,10 +48,22 @@ struct GridGraph
 
     std::vector<Cell> visited_cells;        // A list of visited cells. Used for visualization.
 
-    /**
-     * TODO (P3): Define the structures you need to store node data in the graph.
-     * Use the type defined above.
-     */
+        // --- Project 3: search data ---
+
+    // Parent index of each node (-1 if none)
+    std::vector<int> parent;
+
+    // Distance from start (BFS level / g-cost)
+    std::vector<int> distance;
+
+    // Visited flag for each node
+    std::vector<bool> visited;
+
+    // f-score for A* (g + h). For BFS you can ignore it.
+    std::vector<float> score;
+
+    // For visualization in the nav-app: order of visited cells
+    std::vector<Cell> visited_cells;
 };
 
 

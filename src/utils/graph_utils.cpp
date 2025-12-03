@@ -79,14 +79,14 @@ std::string mapAsString(GridGraph& graph)
 
 void initGraph(GridGraph& graph)
 {
-    /**
-     * TODO (P3): Initialize your graph nodes.
-     *
-     * When this funtion is called, the graph will have loaded the members
-     * which store the properties of the graph, like width, height, and cell
-     * odds values. You should use this information to initialize your added
-     * values, like the distances and the nodes.
-     */
+    int N = graph.width * graph.height;
+
+    graph.parent.assign(N, -1);
+    graph.distance.assign(N, std::numeric_limits<int>::max());
+    graph.visited.assign(N, false);
+    graph.score.assign(N, std::numeric_limits<float>::infinity());
+
+    graph.visited_cells.clear();
 }
 
 
@@ -148,14 +148,27 @@ std::vector<int> findNeighbors(int idx, const GridGraph& graph)
 {
     std::vector<int> neighbors;
 
-    /**
-     * TODO (P3): Return a list of the indices of all the neighbors of the node
-     * at index idx. You should not include any cells that are outside of the
-     * bounds of the graph.
-     *
-     * HINT: The functions idxToCell(), cellToIdx(), and isCellInBounds() might
-     * come in handy.
-     */
+    // Convert index to (i, j)
+    Cell c = idxToCell(idx, graph);
+    int i = c.i;
+    int j = c.j;
+
+    // 4-connected neighbors: up, down, left, right
+    const int di[4] = { -1,  1,  0,  0 };
+    const int dj[4] = {  0,  0, -1,  1 };
+
+    for(int k = 0; k < 4; ++k)
+    {
+        int ni = i + di[k];
+        int nj = j + dj[k];
+
+        // Check bounds
+        if(ni < 0 || ni >= graph.height || nj < 0 || nj >= graph.width)
+            continue;
+
+        int n_idx = cellToIdx(ni, nj, graph);
+        neighbors.push_back(n_idx);
+    }
 
     return neighbors;
 }
@@ -206,19 +219,17 @@ bool checkCollision(int idx, const GridGraph& graph)
 
 int getParent(int idx, const GridGraph& graph)
 {
-    /**
-     * TODO (P3): Return the parent of the node at idx.
-     */
-    return -1;
+    if(idx < 0 || idx >= static_cast<int>(graph.parent.size()))
+        return -1;
+    return graph.parent[idx];
 }
 
 
 float getScore(int idx, const GridGraph& graph)
 {
-    /**
-     * TODO (P3): Return the score of the node at idx.
-     */
-    return HIGH;
+    if(idx < 0 || idx >= static_cast<int>(graph.score.size()))
+        return std::numeric_limits<float>::infinity();
+    return graph.score[idx];
 }
 
 
