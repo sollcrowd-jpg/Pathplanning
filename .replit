@@ -1,0 +1,29 @@
+modules = ["cpp-clang14", "python-3.12", "nix"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Path Planner"
+
+[[workflows.workflow]]
+name = "Path Planner"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd build && ./nav_cli"
+
+[workflows.workflow.metadata]
+outputType = "console"

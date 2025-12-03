@@ -2,6 +2,7 @@
 #define PATH_PLANNING_GRAPH_SEARCH_GRAPH_UTILS_H
 
 #include <vector>
+#include <array>
 #include <limits>
 
 #define HIGH 1e6
@@ -46,9 +47,7 @@ struct GridGraph
     std::vector<int8_t> cell_odds;          // The odds that a cell is occupied.
     std::vector<float> obstacle_distances;  // The distance from each cell to the nearest obstacle.
 
-    std::vector<Cell> visited_cells;        // A list of visited cells. Used for visualization.
-
-        // --- Project 3: search data ---
+    // --- Project 3: search data ---
 
     // Parent index of each node (-1 if none)
     std::vector<int> parent;
